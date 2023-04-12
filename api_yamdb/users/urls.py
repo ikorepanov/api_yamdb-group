@@ -10,5 +10,5 @@ name_app = 'users'
 router = routers.DefaultRouter()
 
 urlpatterns = [
-    path('auth/signup/', create_new_user)
+    path('auth/signup/', create_new_user),
 ]

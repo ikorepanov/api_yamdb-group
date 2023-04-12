@@ -36,4 +36,3 @@ def create_new_user(request):
         serializer.data,
         status=status.HTTP_200_OK
     )
-``
