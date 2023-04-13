@@ -17,24 +17,31 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
 
-class CreateNewUserSerializer(serializers.ModelSerializer):
+class CreateNewUserSerializer(serializers.Serializer):
     '''Сериализатор для создания нового пользователя'''
-    class Meta:
-        model = User
-        fields = (
-            'username',
-            'email'
-        )
+    email = serializers.EmailField()
+    username = serializers.CharField(max_length=250)
 
+    def validate(self, data):
+        username = data.get('username')
+        email = data.get('email')
+        if (
+            User.objects.filter(username=username).exists()
+            and User.objects.get(username=username).email != email
+        ):
+            raise serializers.ValidationError(
+                f'Пользователь {username} существует с другой почтой.'
+            )
+        if (
+            User.objects.filter(email=email).exists()
+            and User.objects.get(email=email).username != username
+        ):
+            raise serializers.ValidationError(
+                f'Почта {email} принадлежит другому пользователю.'
+            )
+        return data
 
-class CreateTokenForUserSerializer(serializers.ModelSerializer):
+class CreateTokenForUserSerializer(serializers.Serializer):
     '''Сериализатор для получения token'''
     username = serializers.CharField(required=True)
-    email = serializers.CharField(required=True)
-
-    class Meta:
-        model = User
-        fields = (
-            'username',
-            'email',
-        )
+    confirmation_code = serializers.CharField(required=True)

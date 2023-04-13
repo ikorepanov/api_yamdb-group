@@ -1,38 +1,72 @@
+import datetime
+
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.tokens import default_token_generator
 from django.conf import settings
 from django.core.mail import send_mail
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
+
 
 from .models import User
-from .serializers import CreateNewUserSerializer
+from .serializers import CreateNewUserSerializer, CreateTokenForUserSerializer
 
 
 @api_view(['POST'])
+@permission_classes([permissions.AllowAny])
 def create_new_user(request):
     '''Создание нового пользователя'''
     serializer = CreateNewUserSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    username = serializer.validated_data.get('username')
-    email = serializer.validated_data.get('email')
-    if any((
-        User.objects.filter(username=username).exists(),
-        User.objects.filter(email=email).exists()
-    )):
-        return Response(
-            {f'Пользователь {username} или {email} уже используются.'},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    else:
-        User.objects.create(username=username, email=email)
-    user = get_object_or_404(User, email=email)
-    confirmation_code = default_token_generator.make_token(user)
-    message = f'Код подтверждения: {confirmation_code}'
-    mail_subject = 'Код подтверждения на YaMDb'
+    username = serializer.validated_data['username']
+    email = serializer.validated_data['email']
+    confirmation_code = datetime.datetime.now().timestamp()
+    User.objects.get_or_create(
+        **serializer.validated_data
+    )
+    User.objects.filter(
+        username=username,
+        email=email).update(confirmation_code=confirmation_code)
+    message = (f'Добрый день, пользователь {username}.\n\n'
+               f'Вы зарегистрировались в учебном проекте 86 группы.\n'
+               f'Код подтверждение email: {confirmation_code}\n')
+    mail_subject = 'Wellcome to YaMDb by 86 group'
     send_mail(mail_subject, message, settings.DEFAULT_FROM_EMAIL, [email])
     return Response(
         serializer.data,
+        status=status.HTTP_200_OK
+    )
+
+
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+def create_token_for_user(request):
+    '''Создаем токен для пользователя'''
+    serializer = CreateTokenForUserSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    username = serializer.validated_data.get('username')
+    confirmation_code = serializer.validated_data.get('confirmation_code')
+    user = get_object_or_404(User, username=username)
+    if confirmation_code != user.confirmation_code:
+        return Response(
+            {'confirmation_code': 'Неверный код подтверждения'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    token = AccessToken.for_user(user)
+    message = (
+        f'Добрый день, {username}.\n'
+        f'Ваш token для настройки API: {str(token)}\n'
+    )
+    mail_subject = 'API token'
+    send_mail(
+        mail_subject,
+        message,
+        settings.DEFAULT_FROM_EMAIL,
+        [user.email]
+    )
+    return Response(
+        {"token": str(token)},
         status=status.HTTP_200_OK
     )
