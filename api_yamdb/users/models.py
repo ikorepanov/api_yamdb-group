@@ -21,7 +21,7 @@ class User(AbstractUser):
     '''Расширяем модель User'''
     username = models.SlugField(
         validators=(validate_username,),
-        max_length=250,
+        max_length=150,
         unique=True,
         blank=False,
         null=False,

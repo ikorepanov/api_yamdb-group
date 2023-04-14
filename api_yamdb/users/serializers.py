@@ -41,6 +41,7 @@ class CreateNewUserSerializer(serializers.Serializer):
             )
         return data
 
+
 class CreateTokenForUserSerializer(serializers.Serializer):
     '''Сериализатор для получения token'''
     username = serializers.CharField(required=True)

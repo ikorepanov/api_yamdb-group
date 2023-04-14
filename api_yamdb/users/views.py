@@ -1,17 +1,17 @@
 import datetime
 
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.tokens import default_token_generator
+from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.core.mail import send_mail
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from rest_framework.decorators import api_view, permission_classes, action
+from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.response import Response
-from rest_framework import status, permissions
+from rest_framework import status, permissions, viewsets
 
 
 from .models import User
-from .serializers import CreateNewUserSerializer, CreateTokenForUserSerializer
+from .serializers import CreateNewUserSerializer, CreateTokenForUserSerializer, UserSerializer
+from .permissions import IsAdminOrSuperUser
 
 
 @api_view(['POST'])
@@ -70,3 +70,27 @@ def create_token_for_user(request):
         {"token": str(token)},
         status=status.HTTP_200_OK
     )
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    '''Вьюсет для пользователей'''
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminOrSuperUser]
+    lookup_field = 'username'
+
+    @action(
+        detail=False,
+        methods=['get', 'patch'],
+        permission_classes=[permissions.IsAuthenticated],
+        url_path='me'
+    )
+    def me(self, request):
+        user = request.user
+        if request.method == 'GET':
+            serializer = self.get_serializer(user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(role=user.role, partial=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
