@@ -10,7 +10,6 @@ router.register(r'v1/reviews', AllReviewViewSet, basename='all_reviews')
 router.register(r'v1/comments', AllCommentViewSet, basename='all_comments')
 
 router.register(r'v1/titles/(?P<title_id>\d+)/reviews', ReviewViewSet, basename='reviews')
-router.register(r'v1/titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)', ReviewViewSet, basename='review_id')
 router.register(r'v1/titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments', CommentViewSet, basename='comments')
 
 urlpatterns = [
