@@ -93,3 +93,17 @@ class CommentViewSet(viewsets.ModelViewSet):
 #         title_id = self.kwargs.get('title_id')
 #         review_id = self.kwargs.get('review_id')
 #         return Comment.objects.filter(review__id=review_id, review__title__id=title_id)
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    pagination_class = CommentsPagination
+
+    def get_review(self):
+        review_id = self.kwargs.get('review_id')
+        return get_object_or_404(Review, id=review_id)
+    
+    def get_queryset(self):
+        review = self.get_review()
+        comments = review.comments.all()
+        return comments
