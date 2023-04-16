@@ -1,4 +1,6 @@
 import datetime
+import random
+import string
 
 from django.shortcuts import get_object_or_404
 from django.conf import settings
@@ -6,12 +8,26 @@ from django.core.mail import send_mail
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.response import Response
-from rest_framework import status, permissions, viewsets
+from rest_framework import status, permissions, viewsets, filters
 
 
 from .models import User
-from .serializers import CreateNewUserSerializer, CreateTokenForUserSerializer, UserSerializer
+from .serializers import (
+    CreateNewUserSerializer,
+    CreateTokenForUserSerializer,
+    UserSerializer
+)
 from .permissions import IsAdminOrSuperUser
+
+
+def create_confirm_code():
+    '''Создание кода подтвердления'''
+    confirm_code = string.ascii_uppercase + string.digits
+    return (
+        ''.join(random.choices(confirm_code, k=5))
+        + '-'
+        + ''.join(random.choices(confirm_code, k=5))
+    )
 
 
 @api_view(['POST'])
@@ -22,7 +38,7 @@ def create_new_user(request):
     serializer.is_valid(raise_exception=True)
     username = serializer.validated_data['username']
     email = serializer.validated_data['email']
-    confirmation_code = datetime.datetime.now().timestamp()
+    confirmation_code = create_confirm_code()
     User.objects.get_or_create(
         **serializer.validated_data
     )
@@ -78,6 +94,9 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAdminOrSuperUser]
     lookup_field = 'username'
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('username',)
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
     @action(
         detail=False,
