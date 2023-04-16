@@ -30,5 +30,3 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'author', 'score', 'pub_date',)
         # fields = ('id', 'text', 'author', 'score', 'pub_date', 'comments')
         model = Review
-
-
