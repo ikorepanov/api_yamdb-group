@@ -36,16 +36,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title = self.get_title()
         serializer.save(author=self.request.user, title=title)
 
-    def perform_update(self, serializer):
-        if serializer.instance.author != self.request.user:
-            raise PermissionDenied(status.HTTP_403_FORBIDDEN)
-        super(ReviewViewSet, self).perform_update(serializer)
-
-    def perform_destroy(self, instance):
-        if instance.author != self.request.user:
-            raise PermissionDenied(status.HTTP_403_FORBIDDEN)
-        instance.delete()
-
 
 class AllCommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
@@ -77,16 +67,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         if title != review.title:
             raise NotFound()
         serializer.save(author=self.request.user, review=review)
-
-    def perform_update(self, serializer):
-        if serializer.instance.author != self.request.user:
-            raise PermissionDenied(status.HTTP_403_FORBIDDEN)
-        super(CommentViewSet, self).perform_update(serializer)
-
-    def perform_destroy(self, instance):
-        if instance.author != self.request.user:
-            raise PermissionDenied(status.HTTP_403_FORBIDDEN)
-        instance.delete()
 
 
 class CategoryViewSet(CreateListDestroyViewSet):
