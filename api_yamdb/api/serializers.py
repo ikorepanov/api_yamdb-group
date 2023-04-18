@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from reviews.models import Title, Review, Comment
+from reviews.models import Comment, Review, Title, Category, Genre
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -20,7 +20,14 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date',)
         model = Review
-from reviews.models import Category, Genre, Title
+        
+    def validate(self, data):
+        user = self.context['request'].user
+        if 'title' in data:
+            title_id = data['title'].id
+            if Review.objects.filter(user=user, title_id=title_id).exists():
+                raise serializers.ValidationError("You have already reviewed this title.")
+        return data
 
 
 class CategorySerializer(serializers.ModelSerializer):
