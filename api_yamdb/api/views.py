@@ -1,12 +1,12 @@
-from reviews.models import Title, Review, Comment
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
-from .serializers import TitleSerializer, ReviewSerializer, CommentSerializer
-from reviews.pagination import ReviewsPagination, CommentsPagination
+from rest_framework import status, viewsets
+from rest_framework.exceptions import NotFound
+from reviews.models import Comment, Review, Title
+from reviews.pagination import CommentsPagination, ReviewsPagination
 
+from .serializers import CommentSerializer, ReviewSerializer, TitleSerializer
+from reviews.permissions import IsAdminOrModerator
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
@@ -21,6 +21,7 @@ class AllReviewViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     pagination_class = ReviewsPagination
+    permission_classes = [IsAdminOrModerator]
 
     def get_title(self):
         title_id = self.kwargs.get('title_id')
@@ -32,20 +33,18 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return reviews
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        title = self.get_title()
+        serializer.save(author=self.request.user, title=title)
 
-    # @api_view(['POST'])
-    # def create_review(self, request):
-    #     try:
-    #         title = self.get_title()
-    #     except Title.DoesNotExist:
-    #         return Response({'error': 'Title not found'}, status=status.HTTP_404_NOT_FOUND)
+    def perform_update(self, serializer):
+        if serializer.instance.author != self.request.user:
+            raise PermissionDenied(status.HTTP_403_FORBIDDEN)
+        super(ReviewViewSet, self).perform_update(serializer)
 
-    #     serializer = ReviewSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save(title=title)
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_destroy(self, instance):
+        if instance.author != self.request.user:
+            raise PermissionDenied(status.HTTP_403_FORBIDDEN)
+        instance.delete()
 
 
 class AllCommentViewSet(viewsets.ModelViewSet):
@@ -56,17 +55,35 @@ class AllCommentViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     pagination_class = CommentsPagination
+    permission_classes = [IsAdminOrModerator]
+
+    def get_queryset(self):
+        title_id = self.kwargs.get('title_id')
+        review_id = self.kwargs.get('review_id')
+        review_obj = get_object_or_404(Review, id=review_id, title=title_id)
+        return Comment.objects.filter(review=review_obj)
 
     def get_review(self):
         review_id = self.kwargs.get('review_id')
         return get_object_or_404(Review, id=review_id)
 
-    def get_queryset(self):
-        review = self.get_review()
-        comments = review.comments.all()
-        return comments
+    def get_title(self):
+        title_id = self.kwargs.get('title_id')
+        return get_object_or_404(Title, id=title_id)
 
-    # def get_queryset(self):
-    #     title_id = self.kwargs.get('title_id')
-    #     review_id = self.kwargs.get('review_id')
-    #     return Comment.objects.filter(review__id=review_id, review__title__id=title_id)
+    def perform_create(self, serializer):
+        review = self.get_review()
+        title = self.get_title()
+        if title != review.title:
+            raise NotFound()
+        serializer.save(author=self.request.user, review=review)
+
+    def perform_update(self, serializer):
+        if serializer.instance.author != self.request.user:
+            raise PermissionDenied(status.HTTP_403_FORBIDDEN)
+        super(CommentViewSet, self).perform_update(serializer)
+
+    def perform_destroy(self, instance):
+        if instance.author != self.request.user:
+            raise PermissionDenied(status.HTTP_403_FORBIDDEN)
+        instance.delete()
