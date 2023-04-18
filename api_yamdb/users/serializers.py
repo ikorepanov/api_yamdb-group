@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.core.validators import RegexValidator
 
 from .models import User
 
@@ -19,8 +20,15 @@ class UserSerializer(serializers.ModelSerializer):
 
 class CreateNewUserSerializer(serializers.Serializer):
     '''Сериализатор для создания нового пользователя'''
-    email = serializers.EmailField()
-    username = serializers.CharField(max_length=250)
+    email = serializers.EmailField(max_length=254)
+    username = serializers.RegexField(regex=r'^[\w.@+-]+\Z', max_length=150)
+
+    def validate_username(self, username):
+        if username.lower() == 'me':
+            raise serializers.ValidationError(
+                f'Логин {username} не может быть использован.'
+            )
+        return username
 
     def validate(self, data):
         username = data.get('username')
