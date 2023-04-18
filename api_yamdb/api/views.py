@@ -2,15 +2,15 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.exceptions import NotFound
-from reviews.models import Comment, Review, Title
+from reviews.models import Comment, Review, Title, Category, Genre
 from reviews.pagination import CommentsPagination, ReviewsPagination
+from django_filters.rest_framework import DjangoFilterBackend
 
-from .serializers import CommentSerializer, ReviewSerializer, TitleSerializer
+from .serializers import CommentSerializer, ReviewSerializer, TitleSerializer, CategorySerializer, GenreSerializer, TitleGETSerializer
 from reviews.permissions import IsAdminOrModerator
-
-class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
-    serializer_class = TitleSerializer
+from .mixins import CreateListDestroyViewSet
+from .permissions import IsAdminOrReadOnly
+from .filters import TitleFilter
 
 
 class AllReviewViewSet(viewsets.ModelViewSet):
@@ -87,3 +87,34 @@ class CommentViewSet(viewsets.ModelViewSet):
         if instance.author != self.request.user:
             raise PermissionDenied(status.HTTP_403_FORBIDDEN)
         instance.delete()
+
+
+class CategoryViewSet(CreateListDestroyViewSet):
+    """Вьюсет для создания обьектов класса Category."""
+
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+
+class GenreViewSet(CreateListDestroyViewSet):
+    """Вьюсет для создания обьектов класса Genre."""
+
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    """Вьюсет для создания обьектов класса Title."""
+
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitleFilter
+
+    def get_serializer_class(self):
+        """Определяет какой сериализатор будет использоваться
+        для разных типов запроса."""
+        if self.request.method == 'GET':
+            return TitleGETSerializer
+        return TitleSerializer
