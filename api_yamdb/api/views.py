@@ -7,7 +7,7 @@ from reviews.pagination import CommentsPagination, ReviewsPagination
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .serializers import CommentSerializer, ReviewSerializer, TitleSerializer, CategorySerializer, GenreSerializer, TitleGETSerializer
-from reviews.permissions import IsAdminOrModerator
+from reviews.permissions import IsSuperUserIsAdminIsModeratorIsAuthor
 from .mixins import CreateListDestroyViewSet
 from .permissions import IsAdminOrReadOnly
 from .filters import TitleFilter
@@ -21,7 +21,7 @@ class AllReviewViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     pagination_class = ReviewsPagination
-    permission_classes = [IsAdminOrModerator]
+    permission_classes = [IsSuperUserIsAdminIsModeratorIsAuthor]
 
     def get_title(self):
         title_id = self.kwargs.get('title_id')
@@ -45,7 +45,7 @@ class AllCommentViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     pagination_class = CommentsPagination
-    permission_classes = [IsAdminOrModerator]
+    permission_classes = [IsSuperUserIsAdminIsModeratorIsAuthor]
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
