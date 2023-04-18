@@ -1,14 +1,5 @@
 from rest_framework import serializers
-<<<<<<< HEAD
 from reviews.models import Title, Review, Comment
-
-
-class TitleSerializer(serializers.ModelSerializer):
-    reviews = serializers.StringRelatedField(many=True, read_only=True)
-
-    class Meta:
-        fields = '__all__'
-        model = Title
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -29,7 +20,6 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date',)
         model = Review
-=======
 from reviews.models import Category, Genre, Title
 
 
@@ -94,4 +84,3 @@ class TitleSerializer(serializers.ModelSerializer):
         """Серилизатор для чтения."""
         serializer = TitleGETSerializer(title)
         return serializer.data
->>>>>>> feature/titles
