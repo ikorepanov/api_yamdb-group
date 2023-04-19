@@ -1,12 +1,19 @@
-from django.core.exceptions import PermissionDenied
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
-from rest_framework import status, viewsets
+from rest_framework import viewsets
 from rest_framework.exceptions import NotFound
 from reviews.models import Comment, Review, Title, Category, Genre
 from reviews.pagination import CommentsPagination, ReviewsPagination
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .serializers import CommentSerializer, ReviewSerializer, TitleSerializer, CategorySerializer, GenreSerializer, TitleGETSerializer
+from .serializers import (
+    CommentSerializer,
+    ReviewSerializer,
+    TitleSerializer,
+    CategorySerializer,
+    GenreSerializer,
+    TitleGETSerializer
+)
 from reviews.permissions import IsSuperUserIsAdminIsModeratorIsAuthor
 from .mixins import CreateListDestroyViewSet
 from .permissions import IsAdminOrReadOnly
@@ -86,7 +93,7 @@ class GenreViewSet(CreateListDestroyViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет для создания обьектов класса Title."""
 
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(rating=Avg('reviews__score'))
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)

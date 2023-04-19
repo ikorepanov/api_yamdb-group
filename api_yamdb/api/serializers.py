@@ -14,19 +14,24 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
-        read_only=True, slug_field='username'
+        read_only=True,
+        slug_field='username'
     )
 
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date',)
         model = Review
-        
+
     def validate(self, data):
-        user = self.context['request'].user
-        if 'title' in data:
-            title_id = data['title'].id
-            if Review.objects.filter(user=user, title_id=title_id).exists():
-                raise serializers.ValidationError("You have already reviewed this title.")
+        request = self.context.get('request')
+        if request.method == 'POST':
+            user = self.context['request'].user
+            title_id = self.context['view'].kwargs.get('title_id')
+            review = Review.objects.filter(author=user, title=title_id)
+            if review.exists():
+                raise serializers.ValidationError(
+                    "You have already reviewed this title."
+                )
         return data
 
 
@@ -51,6 +56,7 @@ class TitleGETSerializer(serializers.ModelSerializer):
 
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Title
@@ -58,6 +64,7 @@ class TitleGETSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'year',
+            'rating',
             'description',
             'genre',
             'category'

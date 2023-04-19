@@ -1,6 +1,10 @@
 from datetime import datetime
 from django.db import models
-from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
+from django.core.validators import (
+    RegexValidator,
+    MinValueValidator,
+    MaxValueValidator
+)
 
 from users.models import User
 
@@ -107,7 +111,7 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
-   
+
 
 class Review(models.Model):
     title = models.ForeignKey(
@@ -122,7 +126,7 @@ class Review(models.Model):
 
     def __str__(self):
         return self.text[:15]
-    
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -141,6 +145,3 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.text[:15]
-
-    
-
