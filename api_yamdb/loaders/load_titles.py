@@ -1,5 +1,5 @@
 import csv
-from reviews.models import Title
+from reviews.models import Title, Category
 
 
 def run_title():
@@ -10,6 +10,7 @@ def run_title():
 
     next(reader)
     for row in reader:
-        print(row)
-        data = Title(id=row[0], name=row[1], year=row[2], category=row[3])
+        category=row[3]
+        category_instance = Category.objects.get(id=category)
+        data = Title(id=row[0], name=row[1], year=row[2], category=category_instance)
         data.save()
