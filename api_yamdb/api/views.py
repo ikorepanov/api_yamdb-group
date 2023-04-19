@@ -3,14 +3,16 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.exceptions import NotFound
 from reviews.models import Comment, Review, Title, Category, Genre
+from users.models import User
 from reviews.pagination import CommentsPagination, ReviewsPagination
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .serializers import CommentSerializer, ReviewSerializer, TitleSerializer, CategorySerializer, GenreSerializer, TitleGETSerializer
-from reviews.permissions import IsSuperUserIsAdminIsModeratorIsAuthor
+from reviews.permissions import IsSuperUserIsAdminIsModeratorIsAuthor, IsSomeOne
 from .mixins import CreateListDestroyViewSet
 from .permissions import IsAdminOrReadOnly
 from .filters import TitleFilter
+from rest_framework.decorators import action
 
 
 class AllReviewViewSet(viewsets.ModelViewSet):
@@ -21,7 +23,7 @@ class AllReviewViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     pagination_class = ReviewsPagination
-    permission_classes = [IsSuperUserIsAdminIsModeratorIsAuthor]
+    # permission_classes = [IsSuperUserIsAdminIsModeratorIsAuthor]
 
     def get_title(self):
         title_id = self.kwargs.get('title_id')
@@ -32,6 +34,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         reviews = title.reviews.all()
         return reviews
 
+    @action(detail=True, methods=['post'], permission_classes=[IsSomeOne])
     def perform_create(self, serializer):
         title = self.get_title()
         serializer.save(author=self.request.user, title=title)

@@ -20,3 +20,19 @@ class IsSuperUserIsAdminIsModeratorIsAuthor(BasePermission):
                  or request.user.is_moderator
                  or request.user == obj.author)
         )
+    
+
+class IsSomeOne(BasePermission):
+    """
+    Разрешает анонимному пользователю только безопасные запросы.
+    Доступ к запросам PATCH и DELETE предоставляется только
+    суперпользователю Джанго, админу Джанго, аутентифицированным пользователям
+    с ролью admin или moderator, а также автору объекта.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        return (
+            request.method in permissions.SAFE_METHODS
+            or request.user.is_authenticated
+            and request.user == obj.author
+        )
