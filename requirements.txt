@@ -9,3 +9,4 @@ pytest-pythonpath==0.7.3
 djoser 
 djangorestframework-simplejwt==4.7.2
 django-filter
+django-extensions
