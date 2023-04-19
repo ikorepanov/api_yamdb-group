@@ -15,5 +15,12 @@ def run_review():
         author = row[3]
         title_instance = Title.objects.get(id=title)
         user_instance = User.objects.get(id=author)
-        data = Review(id=row[0], title=title_instance, text=row[2], author=user_instance, score=row[4], pub_date=row[5])
+        data = Review(
+            id=row[0],
+            title=title_instance,
+            text=row[2],
+            author=user_instance,
+            score=row[4],
+            pub_date=row[5]
+        )
         data.save()

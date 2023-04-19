@@ -10,7 +10,12 @@ def run_title():
 
     next(reader)
     for row in reader:
-        category=row[3]
+        category = row[3]
         category_instance = Category.objects.get(id=category)
-        data = Title(id=row[0], name=row[1], year=row[2], category=category_instance)
+        data = Title(
+            id=row[0],
+            name=row[1],
+            year=row[2],
+            category=category_instance
+        )
         data.save()

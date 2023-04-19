@@ -1,5 +1,10 @@
 from django.urls import path
-from loaders.views import load_titles_view, load_reviews_view, load_users_view, load_comments_view
+from loaders.views import (
+    load_titles_view,
+    load_reviews_view,
+    load_users_view,
+    load_comments_view
+)
 
 app_name = 'loaders'
 
