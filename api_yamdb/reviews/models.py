@@ -38,7 +38,7 @@ class NamedSlugModel(models.Model):
 
 
 class Genre(NamedSlugModel):
-    """Класс Жанры."""
+    """Класс жанров."""
 
     class Meta:
         verbose_name = 'Жанр'
@@ -46,7 +46,7 @@ class Genre(NamedSlugModel):
 
 
 class Category(NamedSlugModel):
-    """Класс Категории."""
+    """Класс категорий."""
 
     class Meta:
         verbose_name = 'Категория'
@@ -104,6 +104,7 @@ class Title(models.Model):
 
 
 class Review(models.Model):
+    """Класс отзывов."""
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='reviews')
     text = models.TextField()
@@ -126,6 +127,7 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
+    """Класс комментариев."""
     review = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name='comments')
     text = models.TextField()

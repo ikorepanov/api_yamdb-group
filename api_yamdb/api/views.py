@@ -23,11 +23,13 @@ from rest_framework.decorators import action
 
 
 class AllReviewViewSet(viewsets.ModelViewSet):
+    """Вьюсет для получения из БД обьектов класса Review."""
     serializer_class = ReviewSerializer
     queryset = Review.objects.all()
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    """Вьюсет для создания обьектов класса Review."""
     serializer_class = ReviewSerializer
     pagination_class = ReviewsPagination
     permission_classes = [IsSuperUserIsAdminIsModeratorIsAuthor]
@@ -46,11 +48,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class AllCommentViewSet(viewsets.ModelViewSet):
+    """Вьюсет для получения из БД обьектов класса Comment."""
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """Вьюсет для создания обьектов класса Comment."""
     serializer_class = CommentSerializer
     pagination_class = CommentsPagination
     permission_classes = [IsSuperUserIsAdminIsModeratorIsAuthor]
