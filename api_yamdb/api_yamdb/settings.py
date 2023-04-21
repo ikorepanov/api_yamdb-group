@@ -26,11 +26,11 @@ INSTALLED_APPS = [
     'users',
     'api.apps.ApiConfig',
     'reviews.apps.ReviewsConfig',
-    'loaders.apps.LoadersConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
     'django_filters',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
