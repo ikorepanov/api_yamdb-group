@@ -10,8 +10,6 @@ from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.response import Response
 from rest_framework import status, permissions, viewsets, filters
 from rest_framework.exceptions import NotFound
-from reviews.models import Comment, Review, Title, Category, Genre
-from reviews.pagination import CommentsPagination, ReviewsPagination
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .serializers import (
@@ -25,12 +23,12 @@ from .serializers import (
     CreateTokenForUserSerializer,
     UserSerializer
 )
+from reviews.pagination import CommentsPagination, ReviewsPagination
+from reviews.models import User, Comment, Review, Title, Category, Genre
 from reviews.permissions import IsSuperUserIsAdminIsModeratorIsAuthor
 from .mixins import CreateListDestroyViewSet
 from .permissions import IsAdminOrReadOnly, IsAdminOrSuperUser
 from .filters import TitleFilter
-<<<<<<< HEAD
-=======
 
 
 def create_confirm_code():
@@ -126,7 +124,6 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save(role=user.role, partial=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
->>>>>>> develop-test
 
 
 class AllReviewViewSet(viewsets.ModelViewSet):
