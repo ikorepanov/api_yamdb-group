@@ -30,10 +30,6 @@ urlpatterns = [
     path(
         '',
         include('users.urls')
-    ),
-    path(
-        '',
-        include('loaders.urls')
     )
 ]
 

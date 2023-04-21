@@ -4,12 +4,10 @@ from django.contrib.auth.models import AbstractUser
 from .validators import validate_username
 
 
-# роли пользователей
 USER = 'user'
 MODERATOR = 'moderator'
 ADMIN = 'admin'
 
-# cписок для выбора роли
 USER_ROLES = [
     (USER, USER),
     (MODERATOR, MODERATOR),

@@ -9,58 +9,48 @@ from django.core.validators import (
 from users.models import User
 
 
-class Genre(models.Model):
-    """Класс Жанры."""
+class NamedSlugModel(models.Model):
+    """
+    A base class for models that have a name and a slug field.
+    """
 
     name = models.CharField(
-        max_length=75,
-        verbose_name='Hазвание жанра',
-        db_index=True
+        max_length=256,
+        verbose_name='Название',
+        db_index=True,
     )
     slug = models.SlugField(
         max_length=50,
-        verbose_name='slug',
+        verbose_name='Slug',
         unique=True,
         validators=[RegexValidator(
             regex=r'^[-a-zA-Z0-9_]+$',
-            message='Слаг жанра содержит недопустимый символ!'
+            message='Slug содержит недопустимый символ!'
         )]
     )
+
+    class Meta:
+        abstract = True
+        ordering = ('name',)
+
+    def __str__(self):
+        return self.name
+
+
+class Genre(NamedSlugModel):
+    """Класс Жанры."""
 
     class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
-        ordering = ('name',)
-
-    def __str__(self):
-        return self.name
 
 
-class Category(models.Model):
+class Category(NamedSlugModel):
     """Класс Категории."""
-
-    name = models.CharField(
-        max_length=256,
-        verbose_name='Hазвание категории',
-        db_index=True
-    )
-    slug = models.SlugField(
-        max_length=50,
-        verbose_name='slug',
-        unique=True,
-        validators=[RegexValidator(
-            regex=r'^[-a-zA-Z0-9_]+$',
-            message='Слаг категорий содержит недопустимый символ!'
-        )]
-    )
 
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
-        ordering = ('name',)
-
-    def __str__(self):
-        return self.name
 
 
 class Title(models.Model):

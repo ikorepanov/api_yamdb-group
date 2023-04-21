@@ -26,7 +26,6 @@ INSTALLED_APPS = [
     'users',
     'api.apps.ApiConfig',
     'reviews.apps.ReviewsConfig',
-    'loaders.apps.LoadersConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',

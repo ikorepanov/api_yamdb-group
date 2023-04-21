@@ -10,10 +10,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import (
     CommentSerializer,
     ReviewSerializer,
-    TitleSerializer,
+    TitleWriteSerializer,
     CategorySerializer,
     GenreSerializer,
-    TitleGETSerializer
+    TitleReadSerializer
 )
 from reviews.permissions import IsSuperUserIsAdminIsModeratorIsAuthor
 from .mixins import CreateListDestroyViewSet
@@ -34,12 +34,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def get_title(self):
         title_id = self.kwargs.get('title_id')
-        return get_object_or_404(Title, id=title_id)
+        return get_object_or_404(Title, pk=title_id)
 
     def get_queryset(self):
         title = self.get_title()
-        reviews = title.reviews.all()
-        return reviews
+        return title.reviews.all()
 
     def perform_create(self, serializer):
         title = self.get_title()
@@ -59,16 +58,16 @@ class CommentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
         review_id = self.kwargs.get('review_id')
-        review_obj = get_object_or_404(Review, id=review_id, title=title_id)
+        review_obj = get_object_or_404(Review, pk=review_id, title=title_id)
         return Comment.objects.filter(review=review_obj)
 
     def get_review(self):
         review_id = self.kwargs.get('review_id')
-        return get_object_or_404(Review, id=review_id)
+        return get_object_or_404(Review, pk=review_id)
 
     def get_title(self):
         title_id = self.kwargs.get('title_id')
-        return get_object_or_404(Title, id=title_id)
+        return get_object_or_404(Title, pk=title_id)
 
     def perform_create(self, serializer):
         review = self.get_review()
@@ -96,7 +95,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет для создания обьектов класса Title."""
 
     queryset = Title.objects.annotate(rating=Avg('reviews__score'))
-    serializer_class = TitleSerializer
+    serializer_class = TitleWriteSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
@@ -105,5 +104,5 @@ class TitleViewSet(viewsets.ModelViewSet):
         """Определяет какой сериализатор будет использоваться
         для разных типов запроса."""
         if self.request.method == 'GET':
-            return TitleGETSerializer
-        return TitleSerializer
+            return TitleReadSerializer
+        return TitleWriteSerializer

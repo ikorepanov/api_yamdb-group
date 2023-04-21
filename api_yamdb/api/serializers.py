@@ -9,6 +9,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = ('id', 'text', 'author', 'pub_date',)
+        # Нельзя заменить на __all__, т.к. переопределяем поле author
         model = Comment
 
 
@@ -51,7 +52,7 @@ class GenreSerializer(serializers.ModelSerializer):
         exclude = ('id',)
 
 
-class TitleGETSerializer(serializers.ModelSerializer):
+class TitleReadSerializer(serializers.ModelSerializer):
     """Сериализатор Title для GET запросов."""
 
     genre = GenreSerializer(many=True, read_only=True)
@@ -71,7 +72,7 @@ class TitleGETSerializer(serializers.ModelSerializer):
         )
 
 
-class TitleSerializer(serializers.ModelSerializer):
+class TitleWriteSerializer(serializers.ModelSerializer):
     """Сериализатор Title для запросов POST, PATCH, DELETE."""
 
     genre = serializers.SlugRelatedField(
@@ -96,5 +97,5 @@ class TitleSerializer(serializers.ModelSerializer):
 
     def to_representation(self, title):
         """Серилизатор для чтения."""
-        serializer = TitleGETSerializer(title)
+        serializer = TitleReadSerializer(title)
         return serializer.data
