@@ -82,6 +82,10 @@ python manage.py migrate
 ```bash
 python manage.py runserver
 ```
+* Запустить скрипт для загрузки тестовых данных:
+```bash
+python manage.py runscript load_csv_to_db
+```
 
 ### Авторы: 
 ### Александр Новиков, @alexander_novikov

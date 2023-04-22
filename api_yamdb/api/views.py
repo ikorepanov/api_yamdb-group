@@ -182,7 +182,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         review = self.get_review()
         title = self.get_title()
         if title != review.title:
-            raise NotFound()
+            raise NotFound("Title doesn't match the review")
         serializer.save(author=self.request.user, review=review)
 
 
