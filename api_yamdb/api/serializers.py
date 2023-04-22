@@ -84,8 +84,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         if request.method == 'POST':
             user = self.context['request'].user
             title_id = self.context['view'].kwargs.get('title_id')
-            review = Review.objects.filter(author=user, title=title_id)
-            if review.exists(): #При попытке создать по документации, ломается все и тесты не проходит. Дайте наводку, у нас не выходит
+            if Review.objects.filter(author=user, title=title_id).exists():
                 raise serializers.ValidationError(
                     "You have already reviewed this title."
                 )
