@@ -64,7 +64,6 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = ('id', 'text', 'author', 'pub_date',)
-        # Нельзя заменить на __all__, т.к. переопределяем поле author
         model = Comment
 
 
@@ -84,8 +83,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         if request.method == 'POST':
             user = self.context['request'].user
             title_id = self.context['view'].kwargs.get('title_id')
-            review = Review.objects.filter(author=user, title=title_id)
-            if review.exists():  # По документации не выходит.
+            if Review.objects.filter(author=user, title=title_id).exists():
                 raise serializers.ValidationError(
                     "You have already reviewed this title."
                 )

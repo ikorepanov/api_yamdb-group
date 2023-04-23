@@ -34,11 +34,9 @@ from .filters import TitleFilter
 def create_confirm_code():
     '''Создание кода подтвердления'''
     confirm_code = string.ascii_uppercase + string.digits
-    return (
-        ''.join(random.choices(confirm_code, k=5))
-        + '-'
-        + ''.join(random.choices(confirm_code, k=5))
-    )
+    part_first = ''.join(random.choices(confirm_code, k=5))
+    part_second = ''.join(random.choices(confirm_code, k=5))
+    return (f'{part_first}-{part_second}')
 
 
 @api_view(['POST'])
@@ -181,7 +179,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         review = self.get_review()
         title = self.get_title()
         if title != review.title:
-            raise NotFound()
+            raise NotFound("Title doesn't match the review")
         serializer.save(author=self.request.user, review=review)
 
 

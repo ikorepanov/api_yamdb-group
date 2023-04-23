@@ -36,8 +36,12 @@ router_v1.register(r'categories', CategoryViewSet, basename='category')
 router_v1.register(r'genres', GenreViewSet, basename='genre')
 router_v1.register(r'titles', TitleViewSet, basename='title')
 
+auth_v1 = [
+    path('signup/', create_new_user),
+    path('token/', create_token_for_user),
+]
+
 urlpatterns = [
-    path("v1/", include(router_v1.urls)),
-    path('v1/auth/signup/', create_new_user),
-    path('v1/auth/token/', create_token_for_user),
+    path('v1/', include(router_v1.urls)),
+    path('v1/auth/', include(auth_v1)),
 ]

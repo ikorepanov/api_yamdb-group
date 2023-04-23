@@ -1,6 +1,3 @@
-#  Для запуска файла использовать команду
-#  'python manage.py runscript load_csv_to_db'
-
 import csv
 from reviews.models import Genre, Category, Title, Review, Comment
 from users.models import User
