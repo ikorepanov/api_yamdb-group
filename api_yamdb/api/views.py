@@ -35,11 +35,9 @@ from .filters import TitleFilter
 def create_confirm_code():
     '''Создание кода подтвердления'''
     confirm_code = string.ascii_uppercase + string.digits
-    return (
-        ''.join(random.choices(confirm_code, k=5))
-        + '-'
-        + ''.join(random.choices(confirm_code, k=5))
-    )
+    part_first = ''.join(random.choices(confirm_code, k=5))
+    part_second = ''.join(random.choices(confirm_code, k=5))
+    return (f'{part_first}-{part_second}')
 
 
 @api_view(['POST'])
