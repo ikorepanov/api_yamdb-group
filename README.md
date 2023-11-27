@@ -1,3 +1,5 @@
+![Sprint 10](https://github.com/ikorepanov/api_final_yatube/assets/108400524/ffa52e22-449c-4f4b-872a-c1abb995dee1)
+
 # API_YAMDB
 ## Учебный проект на курсе Python-разработчик Яндекс-Практикума (10 српинт)
 
