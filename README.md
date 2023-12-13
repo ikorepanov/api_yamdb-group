@@ -148,11 +148,11 @@
 В дальнейших командах используйте `python3` вместо `python` - **для Linux и macOS**.   
 - клонируйте репозиторий:
   ```
-  git clone git@github.com:ikorepanov/api_final_yatube.git
+  git git@github.com:ikorepanov/api_yamdb-group.git
   ```
 - перейдите в папку с проектом:
   ```
-  cd api_final_yatube
+  cd api_yamdb-group
   ```
 - разверните виртуальное окружение:
   ```
@@ -175,9 +175,9 @@
   ```
   pip install -r requirements.txt
   ```
-- перейдите в папку `yatube_api`:
+- перейдите в папку `api_yamdb`:
   ```
-  cd yatube_api
+  cd api_yamdb
   ```
 - выполните миграции:
   ```
