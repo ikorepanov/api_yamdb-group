@@ -148,7 +148,7 @@
 В дальнейших командах используйте `python3` вместо `python` - **для Linux и macOS**.   
 - клонируйте репозиторий:
   ```
-  git git@github.com:ikorepanov/api_yamdb-group.git
+  git clone git@github.com:ikorepanov/api_yamdb-group.git
   ```
 - перейдите в папку с проектом:
   ```
