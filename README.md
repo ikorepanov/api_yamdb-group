@@ -183,6 +183,10 @@
   ```
   python manage.py migrate
   ```
+- запустите скрипт для загрузки тестовых данных:
+  ```
+  python manage.py runscript load_csv_to_db
+  ```
 - создайте суперпользователя:
   ```
   python manage.py createsuperuser
@@ -191,10 +195,7 @@
   ```
   python manage.py runserver
   ```
-- запустите скрипт для загрузки тестовых данных:
-  ```
-  python manage.py runscript load_csv_to_db
-  ```
+
 Проект будет доступен по адресу [http://127.0.0.1:8000/api/v1/](http://127.0.0.1:8000/api/v1/).  
 Админка проекта: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/).  
 Для доступа - использовать данные суперпользователя, созданные ранее.  
